@@ -171,10 +171,14 @@ Plug 'Shougo/vimshell.vim'
 Plug 'jordwalke/VimAutoMakeDirectory'
 
 " Use Coc Vim release branch 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Vim-go
 Plug 'fatih/vim-go'
+
+" Helpers
+Plug 'phongnh/vim-search-helpers'
 
 call plug#end()
 "*****************************************************************************
@@ -365,6 +369,10 @@ omap af <Plug>(coc-funcobj-a)
 " Use <C-a> for select selections ranges, needs server support, like: coc-tsserver, coc-python
 nmap <silent> <C-a> <Plug>(coc-range-select)
 xmap <silent> <C-a> <Plug>(coc-range-select)
+
+" Searching
+nnoremap <Leader>s :CocSearch <C-r>=expand("<cword>")<CR><CR>
+xnoremap <Leader>s <Esc>:CocSearch <C-r>=escape(GetSelectedText(), '"%#*$(){} ')<CR><CR>
 "*****************************************************************************
 "" Floating Window Setups
 "*****************************************************************************
@@ -442,8 +450,9 @@ nnoremap <silent> <ESC> :noh<CR>
 nnoremap <ESC>^[ <ESC>^[
 
 " Replace
-nnoremap <Leader>R :%s/<C-r>=GetWordForSubstitute()<CR>/gcI<Left><Left><Left><Left>
-xnoremap <Leader>R <Esc>:%s/<C-r>=GetSelectedTextForSubstitute()<CR>//gcI<Left><Left><Left><Left>
+nnoremap <Leader>S :%s/<C-r>=GetWordForSubstitute()<CR>/gcI<Left><Left><Left><Left>
+xnoremap <Leader>S <Esc>:%s/<C-r>=GetSelectedTextForSubstitute()<CR>//gcI<Left><Left><Left><Left>
+
 
 " Close the quickfix window with <leader>a
 nnoremap <leader>x :cclose<CR>
