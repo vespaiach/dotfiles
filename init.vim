@@ -24,7 +24,7 @@ set smarttab
 set expandtab
 
 " Better display for messages
-set cmdheight=2
+set cmdheight=1
 
 " You will have bad experience for diagnostic messages when it's default 4000.
 set updatetime=300
@@ -57,6 +57,9 @@ set noswapfile
 set fileformats=unix,dos,mac
 set showcmd
 set shell=/bin/sh
+
+set autoread
+set autowrite
 
 "" Persistent undo
 if has('persistent_undo')
@@ -109,7 +112,7 @@ set title
 set titleold=
 set titlestring=%F
 
-set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\
+set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ [BUFFER=%n]\ %{strftime('%c')}
 
 if exists('*fugitive#statusline')
   set statusline+=%{fugitive#statusline()}
@@ -158,9 +161,6 @@ Plug 'tpope/vim-eunuch'
 "" Enable repeating supported plugin maps with '.'
 Plug 'tpope/vim-repeat'
 
-"" EditorConfig plugin for Vim
-Plug 'editorconfig/editorconfig-vim'
-
 "" Interactive command execution in Vim.
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 
@@ -170,17 +170,19 @@ Plug 'Shougo/vimshell.vim'
 "" Asks to create directories in Vim when needed
 Plug 'jordwalke/VimAutoMakeDirectory'
 
-" Use Coc Vim release branch 
-Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" Vim-go
-Plug 'fatih/vim-go'
-
 " Helpers
 Plug 'phongnh/vim-search-helpers'
 
+" https://github.com/sheerun/vim-polyglot
+" bundle of language packages
+Plug 'sheerun/vim-polyglot'
+
+" Linting for all
+" https://github.com/dense-analysis/ale
+Plug 'dense-analysis/ale'
+
 call plug#end()
+
 "*****************************************************************************
 "" Plugin Setups
 "*****************************************************************************
@@ -209,227 +211,17 @@ let g:NERDTreeShowBookmarks = 1
 let g:nerdtree_tabs_focus_on_files = 1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize = 30
-"*****************************************************************************
-"" Vim-go Plugin Setups
-"*****************************************************************************
-" disable vim-go :GoDef short cut (gd)
-" this is handled by LanguageClient [LC]
-let g:go_def_mapping_enabled = 0
-let g:go_fmt_command = 'goimports'
-let g:go_autodetect_gopath = 1
-let g:go_list_type = 'quickfix'
-let g:go_addtags_transform = 'camelcase'
 
-let g:go_highlight_types = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_extra_types = 1
-let g:go_highlight_generate_tags = 1
+" Ale linting
+" https://github.com/dense-analysis/ale
+" :help g:ale_shell
+let g:ale_fixers = {
+\   'javascript': ['eslint', 'prettier'],
+\}
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 
-" Open :GoDeclsDir with ctrl-g
-nmap <C-d> :GoDeclsDir<cr>
-imap <C-d> <esc>:<C-u>GoDeclsDir<cr>
-
-augroup go
-  autocmd!
-
-  " Show by default 4 spaces for a tab
-  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
-
-  " :GoBuild and :GoTestCompile
-  autocmd FileType go nmap <leader>b :<C-u>call <SID>buildGoFiles()<CR>
-
-  " :GoTest
-  autocmd FileType go nmap <leader>t <Plug>(go-test)
-
-  " :GoRun
-  autocmd FileType go nmap <leader>r <Plug>(go-run)
-
-  " :GoDoc
-  autocmd FileType go nmap <Leader>d <Plug>(go-doc)
-
-  " :GoCoverageToggle
-  autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
-
-  " :GoInfo
-  autocmd FileType go nmap <Leader>i <Plug>(go-info)
-
-  " :GoMetaLinter
-  autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
-
-  " :GoAlternate  commands :A, :AV, :AS and :AT
-  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
-  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
-  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
-  autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
-augroup END
-
-" buildGoFiles is a custom function that builds or compiles the test file.
-" It calls :GoBuild if its a Go file, or :GoTestCompile if it's a test file
-function! s:buildGoFiles()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+_test\.go$'
-    call go#test#Test(0, 1)
-  elseif l:file =~# '^\f\+\.go$'
-    call go#cmd#Build(0)
-  endif
-endfunction
-"*****************************************************************************
-"" Coc Vim Plugin Setups
-"*****************************************************************************
-" Install coc extensions
-let g:coc_global_extensions = [
-\ 'coc-prettier',
-\ 'coc-eslint',
-\ 'coc-json',
-\ 'coc-css',
-\ 'coc-tsserver'
-\]
-
-" Custom icon for coc.nvim statusline
-let g:coc_status_error_sign="ce "
-let g:coc_status_warning_sign="ew "
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-" Highlight symbol under cursor on CursorHold
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-augroup mygroup
-  autocmd!
-  " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  " Update signature help on jump placeholder
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-" Coc only does snippet and additional edit on confirm.
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-" Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-" Remap for rename current word
-nmap <leader>rn <Plug>(coc-rename)
-
-" Remap for format selected region
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-nnoremap <Leader>F :CocCommand prettier.formatFile<CR>
-
-" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap for do codeAction of current line
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Fix autofix problem of current line
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Create mappings for function text object, requires document symbols feature of languageserver.
-xmap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap if <Plug>(coc-funcobj-i)
-omap af <Plug>(coc-funcobj-a)
-
-" Use <C-a> for select selections ranges, needs server support, like: coc-tsserver, coc-python
-nmap <silent> <C-a> <Plug>(coc-range-select)
-xmap <silent> <C-a> <Plug>(coc-range-select)
-
-" Searching
-nnoremap <Leader>s :CocSearch <C-r>=expand("<cword>")<CR><CR>
-xnoremap <Leader>s <Esc>:CocSearch <C-r>=escape(GetSelectedText(), '"%#*$(){} ')<CR><CR>
-"*****************************************************************************
-"" Floating Window Setups
-"*****************************************************************************
-let s:float_term_border_win = 0
-let s:float_term_win = 0
-function! FloatTerm(...)
-  " Configuration
-  let height = float2nr((&lines - 2) * 0.6)
-  let row = float2nr((&lines - height) / 2)
-  let width = float2nr(&columns * 0.6)
-  let col = float2nr((&columns - width) / 2)
-  " Border Window
-  let border_opts = {
-        \ 'relative': 'editor',
-        \ 'row': row - 1,
-        \ 'col': col - 2,
-        \ 'width': width + 4,
-        \ 'height': height + 2,
-        \ 'style': 'minimal'
-        \ }
-  " Terminal Window
-  let opts = {
-        \ 'relative': 'editor',
-        \ 'row': row,
-        \ 'col': col,
-        \ 'width': width,
-        \ 'height': height,
-        \ 'style': 'minimal'
-        \ }
-  let top = "╭" . repeat("─", width + 2) . "╮"
-  let mid = "│" . repeat(" ", width + 2) . "│"
-  let bot = "╰" . repeat("─", width + 2) . "╯"
-  let lines = [top] + repeat([mid], height) + [bot]
-  let bbuf = nvim_create_buf(v:false, v:true)
-  call nvim_buf_set_lines(bbuf, 0, -1, v:true, lines)
-  let s:float_term_border_win = nvim_open_win(bbuf, v:true, border_opts)
-  let buf = nvim_create_buf(v:false, v:true)
-  let s:float_term_win = nvim_open_win(buf, v:true, opts)
-  " Styling
-  call setwinvar(s:float_term_border_win, '&winhl', 'Normal:Normal')
-  call setwinvar(s:float_term_win, '&winhl', 'Normal:Normal')
-  if a:0 == 0
-    terminal
-  else
-    call termopen(a:1)
-  endif
-  startinsert
-  " Close border window when terminal window close
-  autocmd TermClose * ++once :bd! | call nvim_win_close(s:float_term_border_win, v:true)
-endfunction
-
-" Open terminal
-nnoremap <Leader>at :call FloatTerm()<CR>
-" Open node REPL
-nnoremap <Leader>an :call FloatTerm('"node"')<CR>
-" Open tig, yes TIG, A FLOATING TIGGGG!!!!!!
-nnoremap <Leader>ag :call FloatTerm('"tig"')<CR>
 "*****************************************************************************
 "" Autocmd Rules
 "*****************************************************************************
@@ -439,8 +231,6 @@ augroup vimrc-remember-cursor-position
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
 
-set autoread
-set autowrite
 "*****************************************************************************
 "" Key Maps
 "*****************************************************************************
@@ -448,18 +238,9 @@ noremap <Leader>n :NERDTreeTabsToggle<CR>
 nnoremap <C-p> :Files<CR>
 nnoremap <silent> <ESC> :noh<CR>
 nnoremap <ESC>^[ <ESC>^[
-
-" Replace
-nnoremap <Leader>S :%s/<C-r>=GetWordForSubstitute()<CR>/gcI<Left><Left><Left><Left>
-xnoremap <Leader>S <Esc>:%s/<C-r>=GetSelectedTextForSubstitute()<CR>//gcI<Left><Left><Left><Left>
-
-
-" Close the quickfix window with <leader>a
-nnoremap <leader>x :cclose<CR>
+" Fix code with plugin ale
+nnoremap <silent> <Leader>f :ALEFix<CR>
 
 " Remap scrolling
-nnoremap <C-k> <C-u>
-nnoremap <C-j> <C-d>
-
-" don't use recording
-map q <Nop>
+" nnoremap <C-k> <C-u>
+" nnoremap <C-j> <C-d>
