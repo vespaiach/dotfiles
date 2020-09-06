@@ -17,14 +17,14 @@ set clipboard=unnamed
 set backspace=indent,eol,start
 
 "" Tabs. May be overriten by autocmd rules
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
 set smarttab
 set expandtab
 
 " Better display for messages
-set cmdheight=2
+set cmdheight=1
 
 " You will have bad experience for diagnostic messages when it's default 4000.
 set updatetime=300
@@ -114,6 +114,7 @@ set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\
 if exists('*fugitive#statusline')
   set statusline+=%{fugitive#statusline()}
 endif
+
 "*****************************************************************************
 "" Plugins
 "*****************************************************************************
@@ -172,15 +173,12 @@ Plug 'jordwalke/VimAutoMakeDirectory'
 
 " Use Coc Vim release branch 
 Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" Vim-go
-Plug 'fatih/vim-go'
 
 " Helpers
 Plug 'phongnh/vim-search-helpers'
 
 call plug#end()
+
 "*****************************************************************************
 "" Plugin Setups
 "*****************************************************************************
@@ -209,72 +207,7 @@ let g:NERDTreeShowBookmarks = 1
 let g:nerdtree_tabs_focus_on_files = 1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize = 30
-"*****************************************************************************
-"" Vim-go Plugin Setups
-"*****************************************************************************
-" disable vim-go :GoDef short cut (gd)
-" this is handled by LanguageClient [LC]
-let g:go_def_mapping_enabled = 0
-let g:go_fmt_command = 'goimports'
-let g:go_autodetect_gopath = 1
-let g:go_list_type = 'quickfix'
-let g:go_addtags_transform = 'camelcase'
 
-let g:go_highlight_types = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_extra_types = 1
-let g:go_highlight_generate_tags = 1
-
-" Open :GoDeclsDir with ctrl-g
-nmap <C-d> :GoDeclsDir<cr>
-imap <C-d> <esc>:<C-u>GoDeclsDir<cr>
-
-augroup go
-  autocmd!
-
-  " Show by default 4 spaces for a tab
-  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
-
-  " :GoBuild and :GoTestCompile
-  autocmd FileType go nmap <leader>b :<C-u>call <SID>buildGoFiles()<CR>
-
-  " :GoTest
-  autocmd FileType go nmap <leader>t <Plug>(go-test)
-
-  " :GoRun
-  autocmd FileType go nmap <leader>r <Plug>(go-run)
-
-  " :GoDoc
-  autocmd FileType go nmap <Leader>d <Plug>(go-doc)
-
-  " :GoCoverageToggle
-  autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
-
-  " :GoInfo
-  autocmd FileType go nmap <Leader>i <Plug>(go-info)
-
-  " :GoMetaLinter
-  autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
-
-  " :GoAlternate  commands :A, :AV, :AS and :AT
-  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
-  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
-  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
-  autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
-augroup END
-
-" buildGoFiles is a custom function that builds or compiles the test file.
-" It calls :GoBuild if its a Go file, or :GoTestCompile if it's a test file
-function! s:buildGoFiles()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+_test\.go$'
-    call go#test#Test(0, 1)
-  elseif l:file =~# '^\f\+\.go$'
-    call go#cmd#Build(0)
-  endif
-endfunction
 "*****************************************************************************
 "" Coc Vim Plugin Setups
 "*****************************************************************************
@@ -373,63 +306,7 @@ xmap <silent> <C-a> <Plug>(coc-range-select)
 " Searching
 nnoremap <Leader>s :CocSearch <C-r>=expand("<cword>")<CR><CR>
 xnoremap <Leader>s <Esc>:CocSearch <C-r>=escape(GetSelectedText(), '"%#*$(){} ')<CR><CR>
-"*****************************************************************************
-"" Floating Window Setups
-"*****************************************************************************
-let s:float_term_border_win = 0
-let s:float_term_win = 0
-function! FloatTerm(...)
-  " Configuration
-  let height = float2nr((&lines - 2) * 0.6)
-  let row = float2nr((&lines - height) / 2)
-  let width = float2nr(&columns * 0.6)
-  let col = float2nr((&columns - width) / 2)
-  " Border Window
-  let border_opts = {
-        \ 'relative': 'editor',
-        \ 'row': row - 1,
-        \ 'col': col - 2,
-        \ 'width': width + 4,
-        \ 'height': height + 2,
-        \ 'style': 'minimal'
-        \ }
-  " Terminal Window
-  let opts = {
-        \ 'relative': 'editor',
-        \ 'row': row,
-        \ 'col': col,
-        \ 'width': width,
-        \ 'height': height,
-        \ 'style': 'minimal'
-        \ }
-  let top = "╭" . repeat("─", width + 2) . "╮"
-  let mid = "│" . repeat(" ", width + 2) . "│"
-  let bot = "╰" . repeat("─", width + 2) . "╯"
-  let lines = [top] + repeat([mid], height) + [bot]
-  let bbuf = nvim_create_buf(v:false, v:true)
-  call nvim_buf_set_lines(bbuf, 0, -1, v:true, lines)
-  let s:float_term_border_win = nvim_open_win(bbuf, v:true, border_opts)
-  let buf = nvim_create_buf(v:false, v:true)
-  let s:float_term_win = nvim_open_win(buf, v:true, opts)
-  " Styling
-  call setwinvar(s:float_term_border_win, '&winhl', 'Normal:Normal')
-  call setwinvar(s:float_term_win, '&winhl', 'Normal:Normal')
-  if a:0 == 0
-    terminal
-  else
-    call termopen(a:1)
-  endif
-  startinsert
-  " Close border window when terminal window close
-  autocmd TermClose * ++once :bd! | call nvim_win_close(s:float_term_border_win, v:true)
-endfunction
 
-" Open terminal
-nnoremap <Leader>at :call FloatTerm()<CR>
-" Open node REPL
-nnoremap <Leader>an :call FloatTerm('"node"')<CR>
-" Open tig, yes TIG, A FLOATING TIGGGG!!!!!!
-nnoremap <Leader>ag :call FloatTerm('"tig"')<CR>
 "*****************************************************************************
 "" Autocmd Rules
 "*****************************************************************************
@@ -441,6 +318,7 @@ augroup END
 
 set autoread
 set autowrite
+
 "*****************************************************************************
 "" Key Maps
 "*****************************************************************************
@@ -452,7 +330,6 @@ nnoremap <ESC>^[ <ESC>^[
 " Replace
 nnoremap <Leader>S :%s/<C-r>=GetWordForSubstitute()<CR>/gcI<Left><Left><Left><Left>
 xnoremap <Leader>S <Esc>:%s/<C-r>=GetSelectedTextForSubstitute()<CR>//gcI<Left><Left><Left><Left>
-
 
 " Close the quickfix window with <leader>a
 nnoremap <leader>x :cclose<CR>
