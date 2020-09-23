@@ -128,7 +128,7 @@ set autowrite
 "" Key Maps
 "*****************************************************************************
 " Leader key
-let mapleader = "\<Space>"ALEComplete
+let mapleader = '\<Space>'
 nnoremap <C-p> :Files<CR>
 noremap <Leader>f :ALEFix<CR>
 noremap <Leader>g :ALEGoToDefinition<CR>
