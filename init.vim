@@ -128,10 +128,11 @@ set autowrite
 "" Key Maps
 "*****************************************************************************
 " Leader key
-let mapleader = '\<Space>'
+let mapleader = "\<Space>"
 nnoremap <C-p> :Files<CR>
 noremap <Leader>f :ALEFix<CR>
 noremap <Leader>g :ALEGoToDefinition<CR>
+noremap <Leader>n :NERDTreeToggle<CR>
 nnoremap <silent> <ESC> :noh<CR>
 nnoremap <ESC>^[ <ESC>^[
 
