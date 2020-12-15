@@ -1,0 +1,75 @@
+{
+    "workbench.iconTheme": "vscode-icons",
+    "editor.fontLigatures": true,
+    "editor.fontFamily": "'Jetbrains Mono',Ubuntu Mono Ligaturized,Roboto Mono, 'Monoid', Monoid, 'monospace', monospace",
+    "editor.tabSize": 4,
+    "editor.lineHeight": 26,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "vetur.format.defaultFormatterOptions": {
+        "js-beautify-html": {
+            "wrap_attributes": "force-expand-multiline"
+        },
+        "prettyhtml": {
+            "printWidth": 100,
+            "singleQuote": false,
+            "wrapAttributes": false,
+            "sortAttributes": false
+        }
+    },
+    "vetur.format.options.tabSize": 4,
+    "prettier.vueIndentScriptAndStyle": true,
+    "python.formatting.provider": "yapf",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python"
+    },
+    "eslint.validate": ["javascript", "vue"],
+    "eslint.codeAction.showDocumentation": {
+        "enable": true
+    },
+    "git.autofetch": true,
+    "window.zoomLevel": 1,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+
+    "prettier.singleQuote": true,
+    "prettier.tabWidth": 4,
+    "prettier.printWidth": 120,
+
+    "vim.easymotion": true,
+    "vim.incsearch": true,
+    "vim.useSystemClipboard": true,
+    "vim.useCtrlKeys": true,
+    "vim.hlsearch": true,
+    "vim.insertModeKeyBindings": [
+        {
+            "before": ["j", "j"],
+            "after": ["<Esc>"]
+        }
+    ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": ["<leader>", "p"],
+            "commands": ["editor.action.formatDocument"]
+        },
+        {
+            "before": ["<C-w>", "h"],
+            "commands": ["workbench.view.explorer"]
+        },
+        {
+            "before": ["<C-w>", "l"],
+            "commands": ["workbench.files.action.focusOpenEditorsView"]
+        },
+        {
+            "before": ["<C-n>"],
+            "commands": [":nohl"]
+        }
+    ],
+    "vim.leader": "<space>",
+    "vim.handleKeys": {
+        "<C-a>": false,
+        "<C-f>": false
+    },
+    "workbench.editor.showTabs": true
+}
