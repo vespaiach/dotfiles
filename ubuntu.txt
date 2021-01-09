@@ -1,0 +1,59 @@
+sudo apt update
+sudo apt install git
+sudo apt install vim
+sudo apt install tmux
+sudo apt install curl
+sudo apt install zsh
+sudo apt install xclip
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
+
+// Install python3
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt install python3.8
+sudo apt install python3-distutils
+sudo apt install python3-apt
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python3 get-pip.py
+
+// Install docker and docker-compse
+sudo apt install \
+    apt-transport-https \
+    ca-certificates \
+    gnupg-agent
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io
+sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+// Install fuzzy search
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+
+// Install mono fonts
+sudo apt install fonts-firacode
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/install_manual.sh)"
+
+// Install vim plugin manager
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+npm install -g yarn
+
+wget https://raw.githubusercontent.com/sonph/onehalf/master/gnome-terminal/onehalfdark.sh wget https://raw.githubusercontent.com/sonph/onehalf/master/gnome-terminal/onehalflight.sh
+source ./onehalfdark.sh
+
+
+// Remap caps lock to control
+setxkbmap -layout us -option ctrl:nocaps
+
+// Source nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  
