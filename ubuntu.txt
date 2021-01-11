@@ -53,6 +53,17 @@ source ./onehalfdark.sh
 // Remap caps lock to control
 setxkbmap -layout us -option ctrl:nocaps
 
+// file /etc/default/keyboard
+---------------------------------------
+# KEYBOARD CONFIGURATION FILE
+# Consult the keyboard(5) manual page.
+XKBMODEL="pc105"
+XKBLAYOUT="us"
+XKBVARIANT=""
+XKBOPTIONS="ctrl:swapcaps"
+BACKSPACE="guess"
+---------------------------------------
+
 // Source nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
