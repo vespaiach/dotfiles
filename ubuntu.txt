@@ -50,6 +50,9 @@ wget https://raw.githubusercontent.com/sonph/onehalf/master/gnome-terminal/oneha
 source ./onehalfdark.sh
 
 
+// In order to make the default player to play .mp4 files
+sudo apt install gstreamer1.0-libav
+
 // Remap caps lock to control
 setxkbmap -layout us -option ctrl:nocaps
 
@@ -60,7 +63,7 @@ setxkbmap -layout us -option ctrl:nocaps
 XKBMODEL="pc105"
 XKBLAYOUT="us"
 XKBVARIANT=""
-XKBOPTIONS="ctrl:swapcaps"
+XKBOPTIONS="ctrl:nocaps"
 BACKSPACE="guess"
 ---------------------------------------
 
